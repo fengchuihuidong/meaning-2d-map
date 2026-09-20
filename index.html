@@ -6,294 +6,296 @@
 <title>人生意义二维坐标：哲学家与流派</title>
 <style>
   :root {
-    --bg: #f7f5f2;
-    --ink: #1f2328;
-    --muted: #5f6368;
-    --line: #3c4043;
-    --card: #fffcf8;
-    --border: #e6e1d8;
-    --q1: #e8f0fe;
-    --q2: #fce8e6;
-    --q3: #e6f4ea;
-    --q4: #fef7e0;
-    --宗教: #7b1fa2;
-    --古典: #1565c0;
-    --现代: #c62828;
-    --东方: #2e7d32;
+    --bg: #f3f0ea;
+    --ink: #1a1c1e;
+    --muted: #5c6370;
+    --line: #2b2f36;
+    --panel: #fffcf7;
+    --border: #ddd6cb;
+    --q1: #dfe9fb;
+    --q2: #f8e3e0;
+    --q3: #dff0e5;
+    --q4: #f8efd4;
+    --shadow: 0 12px 40px rgba(26,28,30,.08);
   }
   * { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; }
   body {
-    margin: 0;
     font-family: "Noto Sans CJK SC", "PingFang SC", "Hiragino Sans GB",
       "Microsoft YaHei", system-ui, sans-serif;
     background: var(--bg);
     color: var(--ink);
-    line-height: 1.45;
+    display: flex;
+    flex-direction: column;
   }
-  header {
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: 28px 20px 8px;
-  }
-  h1 {
-    font-size: clamp(1.35rem, 2.6vw, 1.85rem);
-    font-weight: 700;
-    margin: 0 0 8px;
-  }
-  .sub {
-    color: var(--muted);
-    font-size: 0.98rem;
-    margin: 0 0 12px;
-  }
-  .note {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 12px 14px;
-    font-size: 0.92rem;
-    color: var(--muted);
-  }
-  .toolbar {
-    max-width: 1100px;
-    margin: 14px auto 0;
-    padding: 0 20px;
+  .topbar {
     display: flex;
     flex-wrap: wrap;
-    gap: 10px;
+    gap: 12px 20px;
     align-items: center;
+    justify-content: space-between;
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--border);
+    background: rgba(255,252,247,.92);
+    backdrop-filter: blur(8px);
+    z-index: 5;
+  }
+  .topbar h1 {
+    margin: 0;
+    font-size: clamp(1.05rem, 2vw, 1.35rem);
+    font-weight: 700;
+  }
+  .topbar .hint {
+    color: var(--muted);
+    font-size: .88rem;
+  }
+  .controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+  }
+  .controls button, .filters button {
+    border: 1px solid var(--border);
+    background: #fff;
+    border-radius: 999px;
+    padding: 6px 12px;
+    font: inherit;
+    font-size: .88rem;
+    cursor: pointer;
+    color: var(--ink);
+  }
+  .controls button:hover, .filters button:hover,
+  .filters button.active {
+    border-color: var(--ink);
   }
   .legend {
     display: flex;
     flex-wrap: wrap;
-    gap: 14px;
-    font-size: 0.95rem;
+    gap: 12px;
+    font-size: .86rem;
+    color: var(--muted);
   }
-  .legend span {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
+  .legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .dot-swatch {
+    width: 10px; height: 10px; border-radius: 50%; display: inline-block;
   }
-  .dot {
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    display: inline-block;
+  .workspace {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 1fr minmax(280px, 340px);
+    min-height: 0;
   }
-  .filters button {
-    border: 1px solid var(--border);
-    background: var(--card);
-    border-radius: 999px;
-    padding: 6px 12px;
-    font: inherit;
-    cursor: pointer;
-    color: var(--ink);
+  @media (max-width: 860px) {
+    .workspace { grid-template-columns: 1fr; grid-template-rows: 1fr minmax(240px, 42vh); }
   }
-  .filters button.active, .filters button:hover {
-    border-color: #202124;
-    background: #fff;
-  }
-  .stage-wrap {
-    max-width: 1100px;
-    margin: 16px auto 28px;
-    padding: 0 12px;
-  }
-  .stage {
+  .viewport {
     position: relative;
-    width: 100%;
-    aspect-ratio: 1 / 1;
-    max-height: min(92vw, 900px);
-    margin: 0 auto;
-    border-radius: 18px;
-    border: 1px solid var(--border);
     overflow: hidden;
-    background: var(--card);
-    box-shadow: 0 8px 28px rgba(0,0,0,.04);
+    background: #ebe6dc;
+    cursor: grab;
     touch-action: none;
+  }
+  .viewport.dragging { cursor: grabbing; }
+  .canvas {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 1100px;
+    height: 1100px;
+    transform-origin: 0 0;
+    will-change: transform;
   }
   .plot {
     position: absolute;
-    inset: 56px 64px 72px 64px;
+    inset: 96px 108px 108px 108px;
   }
-  .quad {
-    position: absolute;
-    width: 50%;
-    height: 50%;
-  }
-  .q-tl { left: 0; top: 0; background: var(--q1); }
-  .q-tr { right: 0; top: 0; background: var(--q2); }
-  .q-bl { left: 0; bottom: 0; background: var(--q3); }
-  .q-br { right: 0; bottom: 0; background: var(--q4); }
+  .quad { position: absolute; width: 50%; height: 50%; }
+  .q-tl { left:0; top:0; background: var(--q1); }
+  .q-tr { right:0; top:0; background: var(--q2); }
+  .q-bl { left:0; bottom:0; background: var(--q3); }
+  .q-br { right:0; bottom:0; background: var(--q4); }
   .axis-h, .axis-v {
-    position: absolute;
-    background: var(--line);
-    z-index: 2;
+    position: absolute; background: var(--line); z-index: 2;
   }
-  .axis-h {
-    left: 0; right: 0; top: 50%;
-    height: 2px;
-    transform: translateY(-50%);
-  }
-  .axis-v {
-    top: 0; bottom: 0; left: 50%;
-    width: 2px;
-    transform: translateX(-50%);
+  .axis-h { left:0; right:0; top:50%; height:2px; transform: translateY(-50%); }
+  .axis-v { top:0; bottom:0; left:50%; width:2px; transform: translateX(-50%); }
+  .axis-arrow {
+    position: absolute; z-index: 3; color: var(--line); font-size: 18px;
+    line-height: 1; pointer-events: none;
   }
   .axis-label {
-    position: absolute;
-    z-index: 4;
-    font-weight: 700;
-    font-size: clamp(0.95rem, 1.7vw, 1.15rem);
-    background: rgba(255,252,248,.88);
-    padding: 2px 6px;
-    border-radius: 6px;
+    position: absolute; z-index: 4; font-weight: 700;
+    font-size: 1.05rem; padding: 4px 10px; border-radius: 8px;
+    background: rgba(255,252,247,.95); border: 1px solid var(--border);
+    white-space: nowrap;
   }
-  .al-left { left: 8px; top: 50%; transform: translateY(-120%); }
-  .al-right { right: 8px; top: 50%; transform: translateY(-120%); }
-  .al-top { top: 8px; left: 50%; transform: translateX(8px); }
-  .al-bottom { bottom: 10px; left: 50%; transform: translateX(8px); }
+  .al-left { left: 8px; top: 50%; transform: translateY(-130%); }
+  .al-right { right: 8px; top: 50%; transform: translateY(-130%); }
+  .al-top { top: 10px; left: 50%; transform: translateX(12px); }
+  .al-bottom { bottom: 12px; left: 50%; transform: translateX(12px); }
+  .axis-sub {
+    display: block; font-weight: 500; font-size: .72rem; color: var(--muted); margin-top: 2px;
+  }
   .q-caption {
-    position: absolute;
-    z-index: 3;
-    font-size: clamp(0.78rem, 1.35vw, 0.92rem);
-    color: var(--muted);
-    max-width: 42%;
+    position: absolute; z-index: 3; max-width: 44%;
+    font-size: .82rem; color: #3d4450; line-height: 1.35;
+    background: rgba(255,252,247,.72); padding: 8px 10px; border-radius: 10px;
     pointer-events: none;
   }
-  .qc-tl { left: 10px; top: 10px; }
-  .qc-tr { right: 10px; top: 10px; text-align: right; }
-  .qc-bl { left: 10px; bottom: 10px; }
-  .qc-br { right: 10px; bottom: 10px; text-align: right; }
+  .q-caption strong { display:block; font-size: .9rem; margin-bottom: 2px; color: var(--ink); }
+  .qc-tl { left: 12px; top: 12px; }
+  .qc-tr { right: 12px; top: 12px; text-align: right; }
+  .qc-bl { left: 12px; bottom: 12px; }
+  .qc-br { right: 12px; bottom: 12px; text-align: right; }
 
   .point {
-    position: absolute;
-    z-index: 5;
+    position: absolute; z-index: 5;
     transform: translate(-50%, -50%);
     cursor: pointer;
   }
   .point .mark {
-    width: 14px;
-    height: 14px;
-    border-radius: 50%;
-    border: 2px solid #fff;
-    box-shadow: 0 1px 4px rgba(0,0,0,.18);
+    width: 16px; height: 16px; border-radius: 50%;
+    border: 2px solid #fff; box-shadow: 0 1px 5px rgba(0,0,0,.2);
+    transition: transform .12s ease;
   }
   .point .label {
-    position: absolute;
-    white-space: nowrap;
-    font-size: clamp(0.88rem, 1.55vw, 1.05rem);
-    font-weight: 600;
-    padding: 3px 8px;
-    border-radius: 8px;
-    background: rgba(255,252,248,.94);
+    position: absolute; white-space: nowrap;
+    font-size: .92rem; font-weight: 650;
+    padding: 3px 8px; border-radius: 8px;
+    background: rgba(255,252,247,.96);
     border: 1px solid var(--border);
-    box-shadow: 0 1px 2px rgba(0,0,0,.04);
     pointer-events: none;
   }
-  .point:hover, .point:focus-within, .point.active {
-    z-index: 20;
+  .point:hover .mark, .point.selected .mark { transform: scale(1.28); }
+  .point.selected .label {
+    border-color: var(--ink);
+    box-shadow: 0 0 0 2px rgba(26,28,30,.08);
   }
-  .point:hover .mark, .point.active .mark {
-    transform: scale(1.25);
+  .dir-n .label { left:50%; bottom:20px; transform:translateX(-50%); }
+  .dir-s .label { left:50%; top:20px; transform:translateX(-50%); }
+  .dir-e .label { left:20px; top:50%; transform:translateY(-50%); }
+  .dir-w .label { right:20px; top:50%; transform:translateY(-50%); }
+  .dir-ne .label { left:16px; bottom:16px; }
+  .dir-nw .label { right:16px; bottom:16px; }
+  .dir-se .label { left:16px; top:16px; }
+  .dir-sw .label { right:16px; top:16px; }
+
+  .hud {
+    position: absolute; left: 12px; bottom: 12px; z-index: 6;
+    display: flex; gap: 8px; align-items: center;
+    background: rgba(255,252,247,.92); border: 1px solid var(--border);
+    border-radius: 12px; padding: 8px 10px; font-size: .82rem; color: var(--muted);
   }
-  .point:hover .label, .point.active .label {
-    border-color: #202124;
+  .hud kbd {
+    font: inherit; border: 1px solid var(--border); border-radius: 6px;
+    padding: 1px 6px; background: #fff; color: var(--ink);
   }
 
-  /* label offset directions */
-  .dir-n .label { left: 50%; bottom: 18px; transform: translateX(-50%); }
-  .dir-s .label { left: 50%; top: 18px; transform: translateX(-50%); }
-  .dir-e .label { left: 18px; top: 50%; transform: translateY(-50%); }
-  .dir-w .label { right: 18px; top: 50%; transform: translateY(-50%); }
-  .dir-ne .label { left: 14px; bottom: 14px; }
-  .dir-nw .label { right: 14px; bottom: 14px; }
-  .dir-se .label { left: 14px; top: 14px; }
-  .dir-sw .label { right: 14px; top: 14px; }
-
-  .tooltip {
-    position: absolute;
-    z-index: 30;
-    min-width: 220px;
-    max-width: min(320px, 70vw);
-    background: #1f2328;
-    color: #fff;
-    border-radius: 12px;
-    padding: 12px 14px;
-    font-size: 0.92rem;
-    line-height: 1.5;
-    box-shadow: 0 12px 30px rgba(0,0,0,.22);
-    pointer-events: none;
-    opacity: 0;
-    transform: translateY(4px);
-    transition: opacity .15s ease, transform .15s ease;
+  .side {
+    background: var(--panel);
+    border-left: 1px solid var(--border);
+    display: flex; flex-direction: column; min-height: 0;
+    box-shadow: var(--shadow);
   }
-  .tooltip.show {
-    opacity: 1;
-    transform: translateY(0);
+  @media (max-width: 860px) {
+    .side { border-left: none; border-top: 1px solid var(--border); }
   }
-  .tooltip strong {
-    display: block;
-    font-size: 1.02rem;
-    margin-bottom: 4px;
+  .side-empty, .side-body { padding: 18px 18px 22px; overflow: auto; }
+  .side-empty {
+    color: var(--muted); font-size: .95rem; line-height: 1.55;
   }
-  .tooltip .meta {
-    color: #c5c8ce;
-    font-size: 0.82rem;
-    margin-bottom: 6px;
+  .side-empty h2 {
+    margin: 0 0 8px; font-size: 1.15rem; color: var(--ink);
   }
-  footer {
-    max-width: 1100px;
-    margin: 0 auto 40px;
-    padding: 0 20px;
-    color: var(--muted);
-    font-size: 0.9rem;
+  .badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: .8rem; color: var(--muted); margin-bottom: 10px;
   }
-  @media (max-width: 640px) {
-    .plot { inset: 48px 42px 60px 42px; }
-    .point .mark { width: 12px; height: 12px; }
+  .side-body h2 {
+    margin: 0 0 6px; font-size: 1.35rem; line-height: 1.25;
+  }
+  .coords {
+    font-size: .82rem; color: var(--muted); margin-bottom: 14px;
+  }
+  .blurb {
+    font-size: .98rem; line-height: 1.65; margin: 0 0 16px;
+  }
+  .meta-grid {
+    display: grid; gap: 10px;
+    grid-template-columns: 1fr 1fr;
+    margin-top: 4px;
+  }
+  .meta-card {
+    background: #f7f3ec; border-radius: 12px; padding: 10px 12px;
+  }
+  .meta-card .k { font-size: .75rem; color: var(--muted); margin-bottom: 4px; }
+  .meta-card .v { font-size: .92rem; font-weight: 650; }
+  .filters {
+    padding: 0 18px 14px; display: flex; flex-wrap: wrap; gap: 6px;
   }
 </style>
 </head>
 <body>
-  <header>
-    <h1>人生意义二维坐标：哲学家与流派</h1>
-    <p class="sub">横轴：意义来源（外在给定 ↔ 自己生成）　｜　纵轴：人生重心（体验生命 ↔ 超越自我）</p>
-    <div class="note">
-      此图回答的是「若继续活，价值主要安放何处」，而非「世界本身有没有预设意义」。
-      点击或悬停圆点可看简要说明；位置为相对示意，带 * 者争议较大。
+  <header class="topbar">
+    <div>
+      <h1>人生意义二维坐标</h1>
+      <div class="hint">意义来源 × 人生重心　·　点选看详情　·　拖拽平移　·　滚轮缩放</div>
+    </div>
+    <div class="controls">
+      <div class="legend" id="legend"></div>
+      <button type="button" id="btnReset" title="重置视图">重置视图</button>
+      <button type="button" id="btnZoomIn">＋</button>
+      <button type="button" id="btnZoomOut">－</button>
     </div>
   </header>
 
-  <div class="toolbar">
-    <div class="legend" id="legend"></div>
-    <div class="filters" id="filters"></div>
-  </div>
-
-  <div class="stage-wrap">
-    <div class="stage" id="stage" aria-label="二维坐标图">
-      <div class="axis-label al-left">外在给定</div>
-      <div class="axis-label al-right">自己生成</div>
-      <div class="axis-label al-top">超越自我</div>
-      <div class="axis-label al-bottom">体验生命</div>
-      <div class="plot" id="plot">
-        <div class="quad q-tl"></div>
-        <div class="quad q-tr"></div>
-        <div class="quad q-bl"></div>
-        <div class="quad q-br"></div>
-        <div class="axis-h"></div>
-        <div class="axis-v"></div>
-        <div class="q-caption qc-tl">有客观意义倾向<br>＋ 超越</div>
-        <div class="q-caption qc-tr">无预设意义<br>＋ 自我超越／创造</div>
-        <div class="q-caption qc-bl">有客观意义倾向<br>＋ 体验</div>
-        <div class="q-caption qc-br">无预设意义<br>＋ 体验／感受</div>
+  <div class="workspace">
+    <div class="viewport" id="viewport" aria-label="可缩放拖拽的坐标画布">
+      <div class="canvas" id="canvas">
+        <div class="axis-label al-left">外在给定<span class="axis-sub">意义来源 ←</span></div>
+        <div class="axis-label al-right">自己生成<span class="axis-sub">→ 意义来源</span></div>
+        <div class="axis-label al-top">超越自我<span class="axis-sub">人生重心 ↑</span></div>
+        <div class="axis-label al-bottom">体验生命<span class="axis-sub">人生重心 ↓</span></div>
+        <div class="plot" id="plot">
+          <div class="quad q-tl"></div>
+          <div class="quad q-tr"></div>
+          <div class="quad q-bl"></div>
+          <div class="quad q-br"></div>
+          <div class="axis-h"></div>
+          <div class="axis-v"></div>
+          <div class="q-caption qc-tl">
+            <strong>客观意义倾向 ＋ 超越</strong>
+            价值落在外在秩序／使命上，并朝向完善、责任或神圣目标
+          </div>
+          <div class="q-caption qc-tr">
+            <strong>无预设意义 ＋ 自我超越</strong>
+            宇宙未必给定答案，但通过选择、创造与投入自我定义
+          </div>
+          <div class="q-caption qc-bl">
+            <strong>客观意义倾向 ＋ 体验</strong>
+            相信有可依凭的秩序／自然，重心更在生命感受与临在
+          </div>
+          <div class="q-caption qc-br">
+            <strong>无预设意义 ＋ 体验</strong>
+            不依赖终极目的，把价值安放在活着、感受与当下姿态
+          </div>
+        </div>
       </div>
-      <div class="tooltip" id="tooltip" role="tooltip"></div>
+      <div class="hud"><kbd>拖拽</kbd> 平移　<kbd>滚轮</kbd> 缩放　<kbd>点击</kbd> 详情</div>
     </div>
-  </div>
 
-  <footer>
-    坐标定义来自你的框架：意义来源（外在给定 ↔ 自己生成）与人生重心（体验生命 ↔ 超越自我）。
-    「没有客观意义」不等于「只能追求体验」——萨特、尼采即是典型反例。
-  </footer>
+    <aside class="side" id="side">
+      <div class="filters" id="filters"></div>
+      <div class="side-empty" id="sideEmpty">
+        <h2>点选一位思想家</h2>
+        左侧画布可拖拽、缩放。点击圆点后，这里会显示所属象限、坐标与简要说明。
+        <br><br>
+        此图回答的是「若继续活，价值主要安放何处」，而非「世界本身有没有预设意义」。带 * 者位置争议较大。
+      </div>
+      <div class="side-body" id="sideBody" hidden></div>
+    </aside>
+  </div>
 
 <script>
 const GROUPS = [
@@ -303,144 +305,262 @@ const GROUPS = [
   { id: "东方", color: "#2e7d32" },
 ];
 
-// x: -1 外在给定 → 1 自己生成
-// y: -1 体验生命 → 1 超越自我
 const POINTS = [
   { name: "基督教哲学", x: -0.90, y: 0.88, group: "宗教/传统", dir: "nw",
+    source: "外在给定", focus: "超越自我",
     blurb: "极强超越：人生指向上帝，个人生命嵌入高于个人的终极秩序。" },
   { name: "伊斯兰教哲学", x: -0.78, y: 0.70, group: "宗教/传统", dir: "w",
+    source: "外在给定", focus: "超越自我",
     blurb: "意义外在给定于神圣启示与律法秩序，人生重心偏责任与朝向超越。" },
   { name: "托马斯·阿奎那", x: -0.84, y: 0.42, group: "宗教/传统", dir: "w",
+    source: "外在给定", focus: "超越自我",
     blurb: "综合信仰与理性：幸福与完善指向上帝，属外在目的＋超越。" },
   { name: "儒家", x: -0.62, y: 0.90, group: "宗教/传统", dir: "n",
+    source: "外在给定", focus: "超越自我",
     blurb: "意义主要来自关系、责任、修身与社会秩序，不只属于个人。" },
   { name: "柏拉图", x: -0.55, y: 0.58, group: "古典", dir: "ne",
+    source: "外在给定", focus: "超越自我",
     blurb: "理念论：真实与善在可感世界之上，人生应朝向理念／善本身。" },
   { name: "亚里士多德", x: -0.42, y: 0.35, group: "古典", dir: "se",
+    source: "外在给定（偏）", focus: "超越自我（偏）",
     blurb: "中间但偏超越：通过德性、理性、实践实现「人的完善」。" },
   { name: "斯多亚派", x: -0.30, y: 0.72, group: "古典", dir: "n",
+    source: "外在给定", focus: "超越自我",
     blurb: "依自然／理性而活，德性即幸福；偏外在秩序＋自我超越。" },
   { name: "弗兰克尔", x: -0.16, y: 0.88, group: "现代", dir: "ne",
+    source: "可发现／外在召唤", focus: "超越自我",
     blurb: "意义常来自工作、爱、责任与对目标的投入，超越色彩很强。" },
   { name: "康德*", x: -0.48, y: 0.06, group: "古典", dir: "sw",
+    source: "外在规范（理性）", focus: "中间偏超越",
     blurb: "道德法则与目的王国；位置有争议，示意放在外在规范＋偏超越一侧。" },
   { name: "宗教神秘主义", x: -0.72, y: -0.40, group: "宗教/传统", dir: "w",
+    source: "外在给定", focus: "体验生命",
     blurb: "相信有客观神圣实在，但重心更在合一体验、临在与感受。" },
   { name: "部分自然主义", x: -0.40, y: -0.58, group: "现代", dir: "sw",
+    source: "自然／客观结构", focus: "体验生命",
     blurb: "世界有自然秩序／可理解结构，人生价值可安放在自然生命体验中。" },
   { name: "伊壁鸠鲁", x: -0.22, y: -0.85, group: "古典", dir: "s",
+    source: "自然主义倾向", focus: "体验生命",
     blurb: "追求安宁、友谊、免于恐惧；不是纵欲，而是让生命过得舒适平静。" },
   { name: "加缪", x: 0.58, y: -0.68, group: "现代", dir: "se",
+    source: "自己生成／无预设", focus: "体验生命",
     blurb: "宇宙无终极意义，仍继续活、感受、行动；重点是「活着本身」。" },
   { name: "庄子／道家", x: 0.18, y: -0.88, group: "东方", dir: "s",
+    source: "消解／自然", focus: "体验生命",
     blurb: "顺其自然、逍遥而游；重点是生命状态本身，而非外在使命。" },
   { name: "佛教（空／消解）", x: 0.06, y: -0.42, group: "东方", dir: "e",
+    source: "弱化意义执着", focus: "体验／放下",
     blurb: "弱化／消解僵固的「意义」执着，重心更接近放下与如实现照。" },
   { name: "部分道家式理解", x: 0.42, y: -0.30, group: "东方", dir: "e",
+    source: "自己生成／无强使命", focus: "体验生命",
     blurb: "无强预设使命，强调自然、无为与当下生命姿态。" },
   { name: "享乐主义（通俗）", x: 0.35, y: -0.58, group: "现代", dir: "sw",
+    source: "自己生成", focus: "体验生命",
     blurb: "通俗版：价值主要安放在快感与舒适体验（与伊壁鸠鲁有重要差别）。" },
   { name: "尼采", x: 0.90, y: 0.88, group: "现代", dir: "ne",
+    source: "自己生成", focus: "超越自我",
     blurb: "创造价值、自我超越，成为更高版本的自己；无预设意义＋强超越。" },
   { name: "萨特", x: 0.76, y: 0.62, group: "现代", dir: "e",
+    source: "自己生成", focus: "超越自我",
     blurb: "存在先于本质：无预设使命，但通过选择、承诺与投入自我定义。" },
   { name: "存在主义（一般）", x: 0.58, y: 0.38, group: "现代", dir: "e",
+    source: "自己生成", focus: "超越自我",
     blurb: "强调自由、选择与责任；多为自己生成意义，并朝向投入的计划。" },
   { name: "海德格尔*", x: 0.45, y: 0.14, group: "现代", dir: "se",
+    source: "自己生成（偏）", focus: "有限超越",
     blurb: "此在、本真与向死而在；位置争议大，示意偏自生＋有限超越。" },
   { name: "人本主义心理学", x: 0.28, y: 0.55, group: "现代", dir: "n",
+    source: "自己生成", focus: "超越／成长",
     blurb: "自我实现与成长；意义多由个体生成，并朝向潜能展开。" },
   { name: "叔本华", x: 0.08, y: 0.12, group: "现代", dir: "e",
+    source: "中间", focus: "体验的否定／超脱",
     blurb: "体验的否定版：普通生命充满欲望与痛苦，主张减欲、审美、同情以暂时超脱。" },
   { name: "佛教（慈悲实践）", x: -0.08, y: 0.42, group: "东方", dir: "n",
+    source: "洞见＋誓愿", focus: "超越自我",
     blurb: "在空性洞见之上，以慈悲、利他与誓愿安放人生重心，偏超越实践。" },
 ];
 
+const viewport = document.getElementById("viewport");
+const canvas = document.getElementById("canvas");
 const plot = document.getElementById("plot");
-const tooltip = document.getElementById("tooltip");
-const stage = document.getElementById("stage");
 const legend = document.getElementById("legend");
 const filters = document.getElementById("filters");
+const sideEmpty = document.getElementById("sideEmpty");
+const sideBody = document.getElementById("sideBody");
 
 let activeGroup = "全部";
+let selected = null;
+let scale = 0.72;
+let tx = 0, ty = 0;
+let dragging = false;
+let moved = false;
+let lastX = 0, lastY = 0;
 
-GROUPS.forEach(g => {
-  const s = document.createElement("span");
-  s.innerHTML = `<i class="dot" style="background:${g.color}"></i>${g.id}`;
-  legend.appendChild(s);
-});
-
-["全部", ...GROUPS.map(g => g.id)].forEach(id => {
-  const b = document.createElement("button");
-  b.textContent = id;
-  b.className = id === "全部" ? "active" : "";
-  b.addEventListener("click", () => {
-    activeGroup = id;
-    [...filters.children].forEach(el => el.classList.toggle("active", el.textContent === id));
-    render();
-  });
-  filters.appendChild(b);
-});
-
-function toPct(v) {
-  // -1..1 → 0%..100%, y inverted (high y = top)
-  return {
-    left: ((v.x + 1) / 2) * 100,
-    top: ((1 - v.y) / 2) * 100,
-  };
-}
+const CANVAS = 1100;
 
 function colorOf(group) {
   return GROUPS.find(g => g.id === group).color;
 }
 
-function hideTip() {
-  tooltip.classList.remove("show");
-  document.querySelectorAll(".point.active").forEach(el => el.classList.remove("active"));
+function applyTransform() {
+  // center canvas, then pan/zoom around viewport center
+  const vw = viewport.clientWidth;
+  const vh = viewport.clientHeight;
+  const cx = vw / 2 + tx;
+  const cy = vh / 2 + ty;
+  canvas.style.transform = `translate(${cx}px, ${cy}px) scale(${scale}) translate(${-CANVAS/2}px, ${-CANVAS/2}px)`;
 }
 
-function showTip(p, el) {
-  document.querySelectorAll(".point.active").forEach(n => n.classList.remove("active"));
-  el.classList.add("active");
-  tooltip.innerHTML = `<strong>${p.name}</strong><div class="meta">${p.group}　·　x=${p.x.toFixed(2)}　y=${p.y.toFixed(2)}</div>${p.blurb}`;
-  tooltip.classList.add("show");
+function fitDefault() {
+  const pad = 40;
+  const vw = Math.max(viewport.clientWidth, 320);
+  const vh = Math.max(viewport.clientHeight, 320);
+  scale = Math.min((vw - pad) / CANVAS, (vh - pad) / CANVAS) * 0.98;
+  tx = 0; ty = 0;
+  applyTransform();
+}
 
-  const rect = stage.getBoundingClientRect();
-  const er = el.getBoundingClientRect();
-  let left = er.left - rect.left + er.width / 2 - 120;
-  let top = er.top - rect.top - 12;
-  left = Math.max(8, Math.min(left, rect.width - 260));
-  // prefer above; if too high, put below
-  const tipH = 120;
-  if (top < tipH + 8) top = er.bottom - rect.top + 10;
-  else top = top - tipH;
-  tooltip.style.left = left + "px";
-  tooltip.style.top = Math.max(8, top) + "px";
+function toPct(p) {
+  return {
+    left: ((p.x + 1) / 2) * 100,
+    top: ((1 - p.y) / 2) * 100,
+  };
+}
+
+function quadrantOf(p) {
+  if (p.x < 0 && p.y >= 0) return "客观意义倾向 ＋ 超越";
+  if (p.x >= 0 && p.y >= 0) return "无预设意义 ＋ 自我超越";
+  if (p.x < 0 && p.y < 0) return "客观意义倾向 ＋ 体验";
+  return "无预设意义 ＋ 体验";
+}
+
+function showDetail(p) {
+  selected = p.name;
+  document.querySelectorAll(".point").forEach(el => {
+    el.classList.toggle("selected", el.dataset.name === p.name);
+  });
+  sideEmpty.hidden = true;
+  sideBody.hidden = false;
+  sideBody.innerHTML = `
+    <div class="badge"><i class="dot-swatch" style="background:${colorOf(p.group)}"></i>${p.group}</div>
+    <h2>${p.name}</h2>
+    <div class="coords">象限：${quadrantOf(p)}　·　坐标 (${p.x.toFixed(2)}, ${p.y.toFixed(2)})</div>
+    <p class="blurb">${p.blurb}</p>
+    <div class="meta-grid">
+      <div class="meta-card"><div class="k">意义来源</div><div class="v">${p.source}</div></div>
+      <div class="meta-card"><div class="k">人生重心</div><div class="v">${p.focus}</div></div>
+    </div>
+  `;
+}
+
+function clearDetail() {
+  selected = null;
+  document.querySelectorAll(".point.selected").forEach(el => el.classList.remove("selected"));
+  sideBody.hidden = true;
+  sideBody.innerHTML = "";
+  sideEmpty.hidden = false;
 }
 
 function render() {
   plot.querySelectorAll(".point").forEach(n => n.remove());
-  hideTip();
   POINTS.filter(p => activeGroup === "全部" || p.group === activeGroup).forEach(p => {
     const pos = toPct(p);
     const el = document.createElement("div");
     el.className = `point dir-${p.dir}`;
+    el.dataset.name = p.name;
     el.style.left = pos.left + "%";
     el.style.top = pos.top + "%";
     el.tabIndex = 0;
     el.innerHTML = `<div class="mark" style="background:${colorOf(p.group)}"></div><div class="label">${p.name}</div>`;
-    el.addEventListener("mouseenter", () => showTip(p, el));
-    el.addEventListener("focus", () => showTip(p, el));
+    if (selected === p.name) el.classList.add("selected");
     el.addEventListener("click", (e) => {
       e.stopPropagation();
-      if (el.classList.contains("active") && tooltip.classList.contains("show")) hideTip();
-      else showTip(p, el);
+      if (moved) return;
+      showDetail(p);
+    });
+    el.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); showDetail(p); }
     });
     plot.appendChild(el);
   });
 }
 
-stage.addEventListener("click", hideTip);
+GROUPS.forEach(g => {
+  const s = document.createElement("span");
+  s.innerHTML = `<i class="dot-swatch" style="background:${g.color}"></i>${g.id}`;
+  legend.appendChild(s);
+});
+
+["全部", ...GROUPS.map(g => g.id)].forEach(id => {
+  const b = document.createElement("button");
+  b.type = "button";
+  b.textContent = id;
+  if (id === "全部") b.classList.add("active");
+  b.addEventListener("click", () => {
+    activeGroup = id;
+    [...filters.children].forEach(el => el.classList.toggle("active", el.textContent === id));
+    clearDetail();
+    render();
+  });
+  filters.appendChild(b);
+});
+
+viewport.addEventListener("pointerdown", (e) => {
+  if (e.target.closest(".point")) return;
+  dragging = true;
+  moved = false;
+  lastX = e.clientX; lastY = e.clientY;
+  viewport.classList.add("dragging");
+  viewport.setPointerCapture(e.pointerId);
+});
+viewport.addEventListener("pointermove", (e) => {
+  if (!dragging) return;
+  const dx = e.clientX - lastX;
+  const dy = e.clientY - lastY;
+  if (Math.abs(dx) + Math.abs(dy) > 3) moved = true;
+  lastX = e.clientX; lastY = e.clientY;
+  tx += dx; ty += dy;
+  applyTransform();
+});
+viewport.addEventListener("pointerup", () => {
+  dragging = false;
+  viewport.classList.remove("dragging");
+});
+viewport.addEventListener("pointercancel", () => {
+  dragging = false;
+  viewport.classList.remove("dragging");
+});
+viewport.addEventListener("click", () => {
+  if (!moved) clearDetail();
+});
+
+viewport.addEventListener("wheel", (e) => {
+  e.preventDefault();
+  const rect = viewport.getBoundingClientRect();
+  const mx = e.clientX - rect.left;
+  const my = e.clientY - rect.top;
+  const vw = viewport.clientWidth, vh = viewport.clientHeight;
+  const old = scale;
+  const next = Math.min(2.4, Math.max(0.35, scale * Math.exp(-e.deltaY * 0.0015)));
+  const ox = mx - (vw / 2 + tx);
+  const oy = my - (vh / 2 + ty);
+  scale = next;
+  tx = mx - vw / 2 - ox * (scale / old);
+  ty = my - vh / 2 - oy * (scale / old);
+  applyTransform();
+}, { passive: false });
+
+document.getElementById("btnReset").addEventListener("click", fitDefault);
+document.getElementById("btnZoomIn").addEventListener("click", () => {
+  scale = Math.min(2.4, scale * 1.15); applyTransform();
+});
+document.getElementById("btnZoomOut").addEventListener("click", () => {
+  scale = Math.max(0.35, scale / 1.15); applyTransform();
+});
+
+window.addEventListener("resize", () => applyTransform());
+
+fitDefault();
 render();
 </script>
 </body>
