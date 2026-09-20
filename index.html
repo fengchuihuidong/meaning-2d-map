@@ -337,6 +337,41 @@
     border-bottom: 1px solid var(--border);
   }
   .filters button { padding: 4px 9px; font-size: .8rem; }
+
+  .range-band {
+    position: absolute; z-index: 1;
+    background: rgba(60, 64, 72, 0.10);
+    border: 1.5px dashed rgba(60, 64, 72, 0.35);
+    border-radius: 10px;
+    pointer-events: none;
+  }
+  .uncert {
+    display: inline-block;
+    font-size: .72rem;
+    padding: 1px 7px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    margin-left: 6px;
+    vertical-align: middle;
+  }
+  .uncert-低 { background: #e6f4ea; color: #137333; }
+  .uncert-中 { background: #fef7e0; color: #8a6d00; }
+  .uncert-高 { background: #fce8e6; color: #c5221f; }
+  .evidence {
+    font-size: .84rem;
+    line-height: 1.45;
+    color: #3d4450;
+    background: #f3efe7;
+    border-radius: 10px;
+    padding: 8px 10px;
+    margin: 0 0 8px;
+  }
+  .range-note {
+    font-size: .78rem;
+    color: var(--muted);
+    margin: 0 0 8px;
+  }
+
 </style>
 </head>
 <body>
@@ -396,79 +431,108 @@ const GROUPS = [
 ];
 
 const POINTS = [
-  { name: "基督教哲学", x: -0.55, y: 0.48, group: "宗教/传统", dir: "se",
-    source: "外在给定", focus: "超越自我",
+  { name: "基督教哲学", x: -0.68, y: 0.55, group: "宗教/传统", dir: "se",
+    source: "外在给定", focus: "超越自我", uncertainty: "低",
+    evidence: "救赎史与神命目的论：人生嵌入高于个人的神圣秩序。",
     blurb: "极强超越：人生指向上帝，个人生命嵌入高于个人的终极秩序。" },
-  { name: "伊斯兰教哲学", x: -0.78, y: 0.70, group: "宗教/传统", dir: "nw",
-    source: "外在给定", focus: "超越自我",
+  { name: "伊斯兰教哲学", x: -0.78, y: 0.70, group: "宗教/传统", dir: "w",
+    source: "外在给定", focus: "超越自我", uncertainty: "低",
+    evidence: "启示与沙里亚规定正当生活；意义外给色彩强。",
     blurb: "意义外在给定于神圣启示与律法秩序，人生重心偏责任与朝向超越。" },
-  { name: "托马斯·阿奎那", x: -0.84, y: 0.42, group: "宗教/传统", dir: "w",
-    source: "外在给定", focus: "超越自我",
+  { name: "托马斯·阿奎那", x: -0.80, y: 0.62, group: "宗教/传统", dir: "w",
+    source: "外在给定", focus: "超越自我", uncertainty: "低",
+    evidence: "终极幸福是神视（visio Dei），而非单纯现世德性。",
     blurb: "综合信仰与理性：幸福与完善指向上帝，属外在目的＋超越。" },
   { name: "儒家", x: -0.42, y: 0.58, group: "宗教/传统", dir: "ne",
-    source: "外在给定", focus: "超越自我",
+    source: "外在给定（天／礼）", focus: "超越自我", uncertainty: "中",
+    evidence: "修身齐家治国与天命／礼乐：意义主要在人伦秩序中实现。",
     blurb: "意义主要来自关系、责任、修身与社会秩序，不只属于个人。" },
-  { name: "柏拉图", x: -0.55, y: 0.58, group: "古典", dir: "ne",
-    source: "外在给定", focus: "超越自我",
+  { name: "柏拉图", x: -0.60, y: 0.68, group: "古典", dir: "ne",
+    source: "外在给定（理念）", focus: "超越自我", uncertainty: "低",
+    evidence: "善的理念与灵魂上升：价值在可感世界之上。",
     blurb: "理念论：真实与善在可感世界之上，人生应朝向理念／善本身。" },
   { name: "亚里士多德", x: -0.42, y: 0.35, group: "古典", dir: "se",
-    source: "外在给定（偏）", focus: "超越自我（偏）",
+    source: "外在给定（偏）", focus: "超越自我（偏）", uncertainty: "中",
+    evidence: "eudaimonia 依人的功能与德性活动；非纯主观发明。",
     blurb: "中间但偏超越：通过德性、理性、实践实现「人的完善」。" },
-  { name: "斯多亚派", x: -0.30, y: 0.72, group: "古典", dir: "ne",
-    source: "外在给定", focus: "超越自我",
+  { name: "斯多亚派", x: -0.55, y: 0.75, group: "古典", dir: "n",
+    source: "外在给定（逻各斯）", focus: "超越自我", uncertainty: "低",
+    evidence: "依自然／宇宙理性而活；德性即顺应外在理性秩序。",
     blurb: "依自然／理性而活，德性即幸福；偏外在秩序＋自我超越。" },
-  { name: "弗兰克尔", x: -0.12, y: 0.70, group: "现代", dir: "n",
-    source: "可发现／外在召唤", focus: "超越自我",
+  { name: "弗兰克尔", x: -0.40, y: 0.68, group: "现代", dir: "n",
+    source: "可发现／召唤", focus: "超越自我", uncertainty: "中",
+    evidence: "意义治疗强调意义是被发现的，而非任意发明（区别于萨特）。",
     blurb: "意义常来自工作、爱、责任与对目标的投入，超越色彩很强。" },
-  { name: "康德*", x: -0.48, y: 0.06, group: "古典", dir: "sw",
-    source: "外在规范（理性）", focus: "中间偏超越",
-    blurb: "道德法则与目的王国；位置有争议，示意放在外在规范＋偏超越一侧。" },
-  { name: "宗教神秘主义", x: -0.72, y: -0.40, group: "宗教/传统", dir: "w",
-    source: "外在给定", focus: "体验生命",
-    blurb: "相信有客观神圣实在，但重心更在合一体验、临在与感受。" },
-  { name: "部分自然主义", x: -0.40, y: -0.58, group: "现代", dir: "sw",
-    source: "自然／客观结构", focus: "体验生命",
-    blurb: "世界有自然秩序／可理解结构，人生价值可安放在自然生命体验中。" },
-  { name: "伊壁鸠鲁", x: -0.22, y: -0.72, group: "古典", dir: "s",
-    source: "自然主义倾向", focus: "体验生命",
+  { name: "康德*", x: -0.30, y: 0.72, group: "古典", dir: "ne",
+    source: "外在规范（实践理性）", focus: "超越自我", uncertainty: "中",
+    evidence: "定言命令与义务论：道德法则约束意志，非感官幸福计算。",
+    blurb: "道德法则与目的王国；位置有争议，示意偏义务／超越一侧。" },
+  { name: "宗教神秘主义", x: -0.72, y: -0.10, group: "宗教/传统", dir: "w",
+    source: "外在给定", focus: "体验↔超越（宽）", uncertainty: "高",
+    evidence: "合一体验与禁欲上升并存；纵轴跨度大，不宜钉死单点。",
+    yRange: [-0.55, 0.35],
+    blurb: "相信有客观神圣实在；体验与超越两端皆有强传统，故给 y 区间。" },
+  { name: "部分自然主义", x: -0.40, y: -0.40, group: "现代", dir: "sw",
+    source: "自然／客观结构", focus: "体验为主", uncertainty: "高",
+    evidence: "自然主义内部从享乐到进化伦理差异大，只能给带。",
+    xRange: [-0.55, -0.25], yRange: [-0.65, -0.20],
+    blurb: "世界有自然秩序／可理解结构；具体落点 internally 分歧大。" },
+  { name: "伊壁鸠鲁", x: -0.38, y: -0.70, group: "古典", dir: "s",
+    source: "自然主义倾向", focus: "体验生命", uncertainty: "低",
+    evidence: "atraxia／友谊／免恐惧：明确以安宁体验为幸福标准。",
     blurb: "追求安宁、友谊、免于恐惧；不是纵欲，而是让生命过得舒适平静。" },
   { name: "加缪", x: 0.58, y: -0.68, group: "现代", dir: "se",
-    source: "自己生成／无预设", focus: "体验生命",
+    source: "自己生成／无预设", focus: "体验生命", uncertainty: "低",
+    evidence: "荒诞与反抗：拒绝虚假超越，强调活着与感受本身。",
     blurb: "宇宙无终极意义，仍继续活、感受、行动；重点是「活着本身」。" },
-  { name: "庄子／道家", x: 0.18, y: -0.72, group: "东方", dir: "s",
-    source: "消解／自然", focus: "体验生命",
+  { name: "庄子／道家", x: -0.05, y: -0.55, group: "东方", dir: "s",
+    source: "消解／自然", focus: "体验生命", uncertainty: "中",
+    evidence: "逍遥、齐物：弱化外在功业，回到生命姿态与自然。",
     blurb: "顺其自然、逍遥而游；重点是生命状态本身，而非外在使命。" },
   { name: "佛教（空／消解）", x: 0.06, y: -0.42, group: "东方", dir: "e",
-    source: "弱化意义执着", focus: "体验／放下",
+    source: "弱化意义执着", focus: "体验／放下", uncertainty: "中",
+    evidence: "空性与离执：消解固定「人生意义」叙事。",
     blurb: "弱化／消解僵固的「意义」执着，重心更接近放下与如实现照。" },
-  { name: "部分道家式理解", x: 0.42, y: -0.30, group: "东方", dir: "e",
-    source: "自己生成／无强使命", focus: "体验生命",
+  { name: "部分道家式理解", x: 0.25, y: -0.35, group: "东方", dir: "e",
+    source: "无强使命", focus: "体验生命", uncertainty: "高",
+    evidence: "现代诠释从养生到政治无为跨度大，给区间。",
+    xRange: [0.10, 0.45], yRange: [-0.55, -0.15],
     blurb: "无强预设使命，强调自然、无为与当下生命姿态。" },
-  { name: "享乐主义（通俗）", x: 0.35, y: -0.58, group: "现代", dir: "sw",
-    source: "自己生成", focus: "体验生命",
+  { name: "享乐主义（通俗）", x: 0.45, y: -0.65, group: "现代", dir: "sw",
+    source: "自己生成", focus: "体验生命", uncertainty: "低",
+    evidence: "通俗享乐以快感最大化为轴，区别于伊壁鸠鲁的安宁。",
     blurb: "通俗版：价值主要安放在快感与舒适体验（与伊壁鸠鲁有重要差别）。" },
-  { name: "尼采", x: 0.55, y: 0.48, group: "现代", dir: "sw",
-    source: "自己生成", focus: "超越自我",
+  { name: "尼采", x: 0.70, y: 0.55, group: "现代", dir: "sw",
+    source: "自己生成", focus: "超越自我", uncertainty: "低",
+    evidence: "价值重估与自我创造：无彼岸给定，强调超越与生成。",
     blurb: "创造价值、自我超越，成为更高版本的自己；无预设意义＋强超越。" },
   { name: "萨特", x: 0.76, y: 0.62, group: "现代", dir: "e",
-    source: "自己生成", focus: "超越自我",
+    source: "自己生成", focus: "超越自我", uncertainty: "低",
+    evidence: "存在先于本质：意义由筹划与承诺发明，非发现。",
     blurb: "存在先于本质：无预设使命，但通过选择、承诺与投入自我定义。" },
-  { name: "存在主义（一般）", x: 0.58, y: 0.38, group: "现代", dir: "e",
-    source: "自己生成", focus: "超越自我",
-    blurb: "强调自由、选择与责任；多为自己生成意义，并朝向投入的计划。" },
-  { name: "海德格尔*", x: 0.45, y: 0.14, group: "现代", dir: "se",
-    source: "自己生成（偏）", focus: "有限超越",
-    blurb: "此在、本真与向死而在；位置争议大，示意偏自生＋有限超越。" },
-  { name: "人本主义心理学", x: 0.28, y: 0.55, group: "现代", dir: "n",
-    source: "自己生成", focus: "超越／成长",
+  { name: "克尔凯郭尔", x: -0.25, y: 0.55, group: "现代", dir: "nw",
+    source: "信仰跳跃／神前个体", focus: "超越自我", uncertainty: "中",
+    evidence: "有神论存在主义：在神面前成为自己，区别于无神的萨特式发明。",
+    blurb: "原「存在主义（一般）」拆出：信仰中的个体超越，而非无神自我发明。" },
+  { name: "海德格尔*", x: 0.35, y: 0.20, group: "现代", dir: "se",
+    source: "自己生成（偏）", focus: "有限超越", uncertainty: "高",
+    evidence: "本真／向死而在与后期存在思想诠释分歧大。",
+    xRange: [0.20, 0.55], yRange: [0.00, 0.40],
+    blurb: "此在、本真与向死而在；位置争议大，以区间标示。" },
+  { name: "人本主义心理学", x: 0.35, y: 0.35, group: "现代", dir: "n",
+    source: "自己生成", focus: "成长／实现", uncertainty: "中",
+    evidence: "自我实现与成长动机：意义偏内在生成与潜能展开。",
     blurb: "自我实现与成长；意义多由个体生成，并朝向潜能展开。" },
-  { name: "叔本华", x: 0.08, y: 0.12, group: "现代", dir: "e",
-    source: "中间", focus: "体验的否定／超脱",
-    blurb: "体验的否定版：普通生命充满欲望与痛苦，主张减欲、审美、同情以暂时超脱。" },
-  { name: "佛教（慈悲实践）", x: -0.08, y: 0.42, group: "东方", dir: "n",
-    source: "洞见＋誓愿", focus: "超越自我",
+  { name: "叔本华", x: 0.12, y: 0.60, group: "现代", dir: "e",
+    source: "中间", focus: "超越（否定意志）", uncertainty: "中",
+    evidence: "否定生命意志、审美／禁欲／同情是对欲望体验的超脱。",
+    blurb: "体验的否定版：主张减欲、审美、同情以暂时超脱痛苦。" },
+  { name: "佛教（慈悲实践）", x: -0.15, y: 0.52, group: "东方", dir: "n",
+    source: "洞见＋誓愿", focus: "超越自我", uncertainty: "中",
+    evidence: "菩萨道／慈悲利他：空性之上仍有强伦理投入。",
     blurb: "在空性洞见之上，以慈悲、利他与誓愿安放人生重心，偏超越实践。" },
 ];
+
 
 const viewport = document.getElementById("viewport");
 const canvas = document.getElementById("canvas");
@@ -532,10 +596,19 @@ function showDetail(p) {
   });
   sideEmpty.hidden = true;
   sideBody.hidden = false;
+  const u = p.uncertainty || "中";
+  let rangeHtml = "";
+  if (p.xRange || p.yRange) {
+    const xr = p.xRange ? `x∈[${p.xRange[0].toFixed(2)}, ${p.xRange[1].toFixed(2)}]` : "";
+    const yr = p.yRange ? `y∈[${p.yRange[0].toFixed(2)}, ${p.yRange[1].toFixed(2)}]` : "";
+    rangeHtml = `<p class="range-note">不确定区间：${[xr, yr].filter(Boolean).join("　")}（灰虚线框）</p>`;
+  }
   sideBody.innerHTML = `
-    <div class="badge"><i class="dot-swatch" style="background:${colorOf(p.group)}"></i>${p.group}</div>
+    <div class="badge"><i class="dot-swatch" style="background:${colorOf(p.group)}"></i>${p.group}<span class="uncert uncert-${u}">不确定度 ${u}</span></div>
     <h2>${p.name}</h2>
-    <div class="coords">象限：${quadrantOf(p)}　·　坐标 (${p.x.toFixed(2)}, ${p.y.toFixed(2)})</div>
+    <div class="coords">象限：${quadrantOf(p)}　·　中心 (${p.x.toFixed(2)}, ${p.y.toFixed(2)})</div>
+    ${rangeHtml}
+    <div class="evidence"><strong>证据　</strong>${p.evidence || "待补"}</div>
     <p class="blurb">${p.blurb}</p>
     <div class="meta-grid">
       <div class="meta-card"><div class="k">意义来源</div><div class="v">${p.source}</div></div>
@@ -552,9 +625,36 @@ function clearDetail() {
   sideEmpty.hidden = false;
 }
 
+function rangeBox(p) {
+  const x0 = p.xRange ? p.xRange[0] : p.x;
+  const x1 = p.xRange ? p.xRange[1] : p.x;
+  const y0 = p.yRange ? p.yRange[0] : p.y;
+  const y1 = p.yRange ? p.yRange[1] : p.y;
+  // pad tiny ranges so a 1D interval is still visible
+  let xa = x0, xb = x1, ya = y0, yb = y1;
+  if (!p.xRange) { xa = p.x - 0.04; xb = p.x + 0.04; }
+  if (!p.yRange) { ya = p.y - 0.04; yb = p.y + 0.04; }
+  const left = ((xa + 1) / 2) * 100;
+  const right = ((xb + 1) / 2) * 100;
+  const top = ((1 - yb) / 2) * 100;
+  const bottom = ((1 - ya) / 2) * 100;
+  const el = document.createElement("div");
+  el.className = "range-band";
+  el.style.left = left + "%";
+  el.style.width = (right - left) + "%";
+  el.style.top = top + "%";
+  el.style.height = (bottom - top) + "%";
+  el.title = p.name + " 不确定区间";
+  return el;
+}
+
 function render() {
-  plot.querySelectorAll(".point").forEach(n => n.remove());
-  POINTS.filter(p => activeGroup === "全部" || p.group === activeGroup).forEach(p => {
+  plot.querySelectorAll(".point, .range-band").forEach(n => n.remove());
+  const list = POINTS.filter(p => activeGroup === "全部" || p.group === activeGroup);
+  list.forEach(p => {
+    if (p.xRange || p.yRange) plot.appendChild(rangeBox(p));
+  });
+  list.forEach(p => {
     const pos = toPct(p);
     const el = document.createElement("div");
     el.className = `point dir-${p.dir}`;
