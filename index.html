@@ -372,6 +372,87 @@
     margin: 0 0 8px;
   }
 
+
+  .view-toggle {
+    display: inline-flex;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    overflow: hidden;
+    background: #fff;
+  }
+  .view-toggle button {
+    border: none !important;
+    border-radius: 0 !important;
+    background: transparent;
+    padding: 6px 14px;
+    font: inherit;
+    font-size: .88rem;
+    cursor: pointer;
+    color: var(--muted);
+  }
+  .view-toggle button.active {
+    background: var(--ink);
+    color: #fff;
+  }
+  .list-view {
+    display: none;
+    flex: 1;
+    min-height: 0;
+    overflow: auto;
+    background: var(--panel);
+    border-right: 1px solid var(--border);
+  }
+  .workspace.mode-list .viewport { display: none; }
+  .workspace.mode-list .list-view { display: block; }
+  .workspace.mode-map .list-view { display: none; }
+  .list-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: .88rem;
+  }
+  .list-table th, .list-table td {
+    text-align: left;
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  .list-table th {
+    position: sticky; top: 0;
+    background: #f7f3ec;
+    font-weight: 700;
+    font-size: .78rem;
+    color: var(--muted);
+    z-index: 1;
+  }
+  .list-table tr { cursor: pointer; }
+  .list-table tr:hover, .list-table tr.active { background: #f3efe7; }
+  .list-table tr.active { box-shadow: inset 3px 0 0 var(--ink); }
+  .list-name { font-weight: 700; white-space: nowrap; }
+  .list-evidence { color: #3d4450; line-height: 1.4; }
+  .list-coords { font-variant-numeric: tabular-nums; white-space: nowrap; color: var(--muted); }
+  @media (max-width: 860px) {
+    .workspace.mode-list .list-view { border-right: none; }
+    .list-table thead { display: none; }
+    .list-table, .list-table tbody, .list-table tr, .list-table td {
+      display: block; width: 100%;
+    }
+    .list-table tr {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--border);
+    }
+    .list-table td { border: none; padding: 2px 0; }
+    .list-table td::before {
+      content: attr(data-label);
+      display: inline-block;
+      min-width: 4.5em;
+      color: var(--muted);
+      font-size: .75rem;
+      margin-right: 6px;
+    }
+    .list-table td.list-name-cell::before { display: none; }
+    .list-name { font-size: 1rem; }
+  }
+
 </style>
 </head>
 <body>
@@ -381,6 +462,10 @@
       <div class="hint">意义来源 × 人生重心　·　点选看详情　·　拖拽平移　·　滚轮缩放</div>
     </div>
     <div class="controls">
+      <div class="view-toggle" role="group" aria-label="视图切换">
+        <button type="button" id="btnMap" class="active">地图</button>
+        <button type="button" id="btnList">列表</button>
+      </div>
       <div class="legend" id="legend"></div>
       <button type="button" id="btnReset" title="重置视图">重置视图</button>
       <button type="button" id="btnZoomIn">＋</button>
@@ -388,7 +473,7 @@
     </div>
   </header>
 
-  <div class="workspace">
+  <div class="workspace mode-map" id="workspace">
     <div class="viewport" id="viewport" aria-label="可缩放拖拽的坐标画布">
       <div class="canvas" id="canvas">
         <div class="axis-label al-left">外在给定<span class="axis-sub">意义来源 ←</span></div>
@@ -411,6 +496,20 @@
       <div class="hud"><kbd>拖拽</kbd>平移　<kbd>双指</kbd>缩放　<kbd>点选</kbd>详情</div>
     </div>
 
+    <div class="list-view" id="listView" aria-label="思想家列表">
+      <table class="list-table">
+        <thead>
+          <tr>
+            <th>名称</th>
+            <th>组别</th>
+            <th>坐标</th>
+            <th>不确定度</th>
+            <th>证据</th>
+          </tr>
+        </thead>
+        <tbody id="listBody"></tbody>
+      </table>
+    </div>
     <aside class="side" id="side">
       <div class="filters" id="filters"></div>
       <div class="side-empty" id="sideEmpty">
@@ -472,7 +571,7 @@ const POINTS = [
     evidence: "合一体验与禁欲上升并存；纵轴跨度大，不宜钉死单点。",
     yRange: [-0.55, 0.35],
     blurb: "相信有客观神圣实在；体验与超越两端皆有强传统，故给 y 区间。" },
-  { name: "部分自然主义", x: -0.40, y: -0.40, group: "现代", dir: "sw",
+  { name: "部分自然主义", x: -0.35, y: -0.55, group: "现代", dir: "sw",
     source: "自然／客观结构", focus: "体验为主", uncertainty: "高",
     evidence: "自然主义内部从享乐到进化伦理差异大，只能给带。",
     xRange: [-0.55, -0.25], yRange: [-0.65, -0.20],
@@ -493,7 +592,7 @@ const POINTS = [
     source: "弱化意义执着", focus: "体验／放下", uncertainty: "中",
     evidence: "空性与离执：消解固定「人生意义」叙事。",
     blurb: "弱化／消解僵固的「意义」执着，重心更接近放下与如实现照。" },
-  { name: "部分道家式理解", x: 0.25, y: -0.35, group: "东方", dir: "e",
+  { name: "部分道家式理解", x: 0.40, y: -0.35, group: "东方", dir: "e",
     source: "无强使命", focus: "体验生命", uncertainty: "高",
     evidence: "现代诠释从养生到政治无为跨度大，给区间。",
     xRange: [0.10, 0.45], yRange: [-0.55, -0.15],
@@ -615,6 +714,7 @@ function showDetail(p) {
       <div class="meta-card"><div class="k">人生重心</div><div class="v">${p.focus}</div></div>
     </div>
   `;
+  if (typeof renderList === "function") renderList();
 }
 
 function clearDetail() {
@@ -623,6 +723,7 @@ function clearDetail() {
   sideBody.hidden = true;
   sideBody.innerHTML = "";
   sideEmpty.hidden = false;
+  if (typeof renderList === "function") renderList();
 }
 
 function rangeBox(p) {
@@ -674,7 +775,58 @@ function render() {
     });
     plot.appendChild(el);
   });
+  if (typeof renderList === "function") renderList();
 }
+
+
+const workspace = document.getElementById("workspace");
+const listBody = document.getElementById("listBody");
+const btnMap = document.getElementById("btnMap");
+const btnList = document.getElementById("btnList");
+
+function setView(mode) {
+  workspace.classList.toggle("mode-map", mode === "map");
+  workspace.classList.toggle("mode-list", mode === "list");
+  btnMap.classList.toggle("active", mode === "map");
+  btnList.classList.toggle("active", mode === "list");
+  const showMapBtns = mode === "map";
+  document.getElementById("btnReset").style.display = showMapBtns ? "" : "none";
+  document.getElementById("btnZoomIn").style.display = showMapBtns ? "" : "none";
+  document.getElementById("btnZoomOut").style.display = showMapBtns ? "" : "none";
+  if (mode === "map") requestAnimationFrame(fitDefault);
+}
+
+btnMap.addEventListener("click", () => setView("map"));
+btnList.addEventListener("click", () => setView("list"));
+
+const _origRender = typeof render === "function" ? render : null;
+
+function renderList() {
+  const list = POINTS.filter(p => activeGroup === "全部" || p.group === activeGroup)
+    .slice()
+    .sort((a, b) => a.name.localeCompare(b.name, "zh"));
+  listBody.innerHTML = "";
+  list.forEach(p => {
+    const tr = document.createElement("tr");
+    if (selected === p.name) tr.classList.add("active");
+    tr.innerHTML = `
+      <td class="list-name-cell" data-label=""><span class="list-name">${p.name}</span></td>
+      <td data-label="组别">${p.group}</td>
+      <td class="list-coords" data-label="坐标">(${p.x.toFixed(2)}, ${p.y.toFixed(2)})</td>
+      <td data-label="不确定度"><span class="uncert uncert-${p.uncertainty || "中"}">${p.uncertainty || "中"}</span></td>
+      <td class="list-evidence" data-label="证据">${p.evidence || ""}</td>
+    `;
+    tr.addEventListener("click", () => {
+      showDetail(p);
+      document.querySelectorAll(".point").forEach(el => {
+        el.classList.toggle("selected", el.dataset.name === p.name);
+      });
+      renderList();
+    });
+    listBody.appendChild(tr);
+  });
+}
+
 
 GROUPS.forEach(g => {
   const s = document.createElement("span");
