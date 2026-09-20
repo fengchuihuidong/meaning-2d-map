@@ -83,7 +83,7 @@
   .workspace {
     flex: 1;
     display: grid;
-    grid-template-columns: 1fr minmax(280px, 340px);
+    grid-template-columns: 1fr minmax(240px, 300px);
     min-height: 0;
   }
   @media (max-width: 860px) {
@@ -141,19 +141,26 @@
   .axis-sub {
     display: block; font-weight: 500; font-size: .72rem; color: var(--muted); margin-top: 2px;
   }
-  .q-caption {
-    position: absolute; z-index: 3; max-width: 48%;
-    font-size: 1.05rem; color: #2f3540; line-height: 1.45;
-    background: rgba(255,252,247,.94); padding: 12px 14px; border-radius: 12px;
+  /* Fixed to viewport — not scaled with canvas, always readable */
+  .q-overlay {
+    position: absolute; z-index: 7; max-width: min(280px, 38%);
+    font-size: 14px; color: #2f3540; line-height: 1.4;
+    background: rgba(255,252,247,.95); padding: 10px 12px; border-radius: 12px;
     border: 1px solid rgba(221,214,203,.95);
     pointer-events: none;
-    box-shadow: 0 2px 10px rgba(0,0,0,.04);
+    box-shadow: 0 4px 16px rgba(0,0,0,.06);
   }
-  .q-caption strong { display:block; font-size: 1.18rem; margin-bottom: 4px; color: var(--ink); }
-  .qc-tl { left: 12px; top: 12px; }
-  .qc-tr { right: 12px; top: 12px; text-align: right; }
-  .qc-bl { left: 12px; bottom: 12px; }
-  .qc-br { right: 12px; bottom: 12px; text-align: right; }
+  .q-overlay strong {
+    display: block; font-size: 16px; margin-bottom: 4px; color: var(--ink);
+  }
+  .q-overlay.qc-tl { left: 12px; top: 12px; }
+  .q-overlay.qc-tr { right: 12px; top: 12px; text-align: right; }
+  .q-overlay.qc-bl { left: 12px; bottom: 52px; }
+  .q-overlay.qc-br { right: 12px; bottom: 52px; text-align: right; }
+  @media (max-width: 900px) {
+    .q-overlay { max-width: min(220px, 42%); font-size: 13px; padding: 8px 10px; }
+    .q-overlay strong { font-size: 14px; }
+  }
 
   .point {
     position: absolute; z-index: 5;
@@ -224,25 +231,25 @@
   @media (max-width: 860px) {
     .side { border-left: none; border-top: 1px solid var(--border); }
   }
-  .side-empty, .side-body { padding: 12px 14px 16px; overflow: auto; }
+  .side-empty, .side-body { padding: 10px 12px 12px; overflow: auto; }
   .side-empty {
-    color: var(--muted); font-size: .9rem; line-height: 1.45;
+    color: var(--muted); font-size: .86rem; line-height: 1.4;
   }
   .side-empty h2 {
-    margin: 0 0 6px; font-size: 1.05rem; color: var(--ink);
+    margin: 0 0 4px; font-size: 1rem; color: var(--ink);
   }
   .badge {
     display: inline-flex; align-items: center; gap: 6px;
     font-size: .78rem; color: var(--muted); margin-bottom: 6px;
   }
   .side-body h2 {
-    margin: 0 0 4px; font-size: 1.2rem; line-height: 1.25;
+    margin: 0 0 2px; font-size: 1.12rem; line-height: 1.25;
   }
   .coords {
-    font-size: .8rem; color: var(--muted); margin-bottom: 8px;
+    font-size: .78rem; color: var(--muted); margin-bottom: 6px;
   }
   .blurb {
-    font-size: .92rem; line-height: 1.5; margin: 0 0 10px;
+    font-size: .88rem; line-height: 1.45; margin: 0 0 8px;
   }
   .meta-grid {
     display: grid; gap: 8px;
@@ -255,9 +262,10 @@
   .meta-card .k { font-size: .72rem; color: var(--muted); margin-bottom: 2px; }
   .meta-card .v { font-size: .88rem; font-weight: 650; }
   .filters {
-    padding: 10px 14px 8px; display: flex; flex-wrap: wrap; gap: 6px;
+    padding: 8px 10px; display: flex; flex-wrap: wrap; gap: 5px;
     border-bottom: 1px solid var(--border);
   }
+  .filters button { padding: 4px 9px; font-size: .8rem; }
 </style>
 </head>
 <body>
@@ -288,24 +296,12 @@
           <div class="quad q-br"></div>
           <div class="axis-h"></div>
           <div class="axis-v"></div>
-          <div class="q-caption qc-tl">
-            <strong>客观意义倾向 ＋ 超越</strong>
-            价值落在外在秩序／使命上，并朝向完善、责任或神圣目标
-          </div>
-          <div class="q-caption qc-tr">
-            <strong>无预设意义 ＋ 自我超越</strong>
-            宇宙未必给定答案，但通过选择、创造与投入自我定义
-          </div>
-          <div class="q-caption qc-bl">
-            <strong>客观意义倾向 ＋ 体验</strong>
-            相信有可依凭的秩序／自然，重心更在生命感受与临在
-          </div>
-          <div class="q-caption qc-br">
-            <strong>无预设意义 ＋ 体验</strong>
-            不依赖终极目的，把价值安放在活着、感受与当下姿态
-          </div>
         </div>
       </div>
+      <div class="q-overlay qc-tl"><strong>客观意义倾向 ＋ 超越</strong>价值落在外在秩序／使命，朝向完善、责任或神圣目标</div>
+      <div class="q-overlay qc-tr"><strong>无预设意义 ＋ 自我超越</strong>未必有给定答案，靠选择、创造与投入自我定义</div>
+      <div class="q-overlay qc-bl"><strong>客观意义倾向 ＋ 体验</strong>依凭秩序／自然，重心在生命感受与临在</div>
+      <div class="q-overlay qc-br"><strong>无预设意义 ＋ 体验</strong>不靠终极目的，价值安放在活着与当下姿态</div>
       <div class="hud"><kbd>拖拽</kbd> 平移　<kbd>滚轮</kbd> 缩放　<kbd>点击</kbd> 详情</div>
     </div>
 
@@ -313,9 +309,8 @@
       <div class="filters" id="filters"></div>
       <div class="side-empty" id="sideEmpty">
         <h2>点选一位思想家</h2>
-        点击圆点看象限与说明。标签默认缩略，悬停/选中显示全称。
-        <br><br>
-        回答的是「价值安放何处」，不是「有没有预设意义」。* 表示位置争议较大。
+        点圆点看说明。标签缩略，悬停展开。<br>
+        问的是价值安放何处。*＝位置有争议。
       </div>
       <div class="side-body" id="sideBody" hidden></div>
     </aside>
@@ -330,7 +325,7 @@ const GROUPS = [
 ];
 
 const POINTS = [
-  { name: "基督教哲学", x: -0.90, y: 0.88, group: "宗教/传统", dir: "n",
+  { name: "基督教哲学", x: -0.78, y: 0.72, group: "宗教/传统", dir: "n",
     source: "外在给定", focus: "超越自我",
     blurb: "极强超越：人生指向上帝，个人生命嵌入高于个人的终极秩序。" },
   { name: "伊斯兰教哲学", x: -0.78, y: 0.70, group: "宗教/传统", dir: "nw",
@@ -339,7 +334,7 @@ const POINTS = [
   { name: "托马斯·阿奎那", x: -0.84, y: 0.42, group: "宗教/传统", dir: "w",
     source: "外在给定", focus: "超越自我",
     blurb: "综合信仰与理性：幸福与完善指向上帝，属外在目的＋超越。" },
-  { name: "儒家", x: -0.62, y: 0.90, group: "宗教/传统", dir: "ne",
+  { name: "儒家", x: -0.52, y: 0.78, group: "宗教/传统", dir: "ne",
     source: "外在给定", focus: "超越自我",
     blurb: "意义主要来自关系、责任、修身与社会秩序，不只属于个人。" },
   { name: "柏拉图", x: -0.55, y: 0.58, group: "古典", dir: "ne",
@@ -351,7 +346,7 @@ const POINTS = [
   { name: "斯多亚派", x: -0.30, y: 0.72, group: "古典", dir: "ne",
     source: "外在给定", focus: "超越自我",
     blurb: "依自然／理性而活，德性即幸福；偏外在秩序＋自我超越。" },
-  { name: "弗兰克尔", x: -0.16, y: 0.88, group: "现代", dir: "n",
+  { name: "弗兰克尔", x: -0.12, y: 0.70, group: "现代", dir: "n",
     source: "可发现／外在召唤", focus: "超越自我",
     blurb: "意义常来自工作、爱、责任与对目标的投入，超越色彩很强。" },
   { name: "康德*", x: -0.48, y: 0.06, group: "古典", dir: "sw",
@@ -363,13 +358,13 @@ const POINTS = [
   { name: "部分自然主义", x: -0.40, y: -0.58, group: "现代", dir: "sw",
     source: "自然／客观结构", focus: "体验生命",
     blurb: "世界有自然秩序／可理解结构，人生价值可安放在自然生命体验中。" },
-  { name: "伊壁鸠鲁", x: -0.22, y: -0.85, group: "古典", dir: "s",
+  { name: "伊壁鸠鲁", x: -0.22, y: -0.72, group: "古典", dir: "s",
     source: "自然主义倾向", focus: "体验生命",
     blurb: "追求安宁、友谊、免于恐惧；不是纵欲，而是让生命过得舒适平静。" },
   { name: "加缪", x: 0.58, y: -0.68, group: "现代", dir: "se",
     source: "自己生成／无预设", focus: "体验生命",
     blurb: "宇宙无终极意义，仍继续活、感受、行动；重点是「活着本身」。" },
-  { name: "庄子／道家", x: 0.18, y: -0.88, group: "东方", dir: "s",
+  { name: "庄子／道家", x: 0.18, y: -0.72, group: "东方", dir: "s",
     source: "消解／自然", focus: "体验生命",
     blurb: "顺其自然、逍遥而游；重点是生命状态本身，而非外在使命。" },
   { name: "佛教（空／消解）", x: 0.06, y: -0.42, group: "东方", dir: "e",
@@ -381,7 +376,7 @@ const POINTS = [
   { name: "享乐主义（通俗）", x: 0.35, y: -0.58, group: "现代", dir: "sw",
     source: "自己生成", focus: "体验生命",
     blurb: "通俗版：价值主要安放在快感与舒适体验（与伊壁鸠鲁有重要差别）。" },
-  { name: "尼采", x: 0.90, y: 0.88, group: "现代", dir: "ne",
+  { name: "尼采", x: 0.78, y: 0.72, group: "现代", dir: "ne",
     source: "自己生成", focus: "超越自我",
     blurb: "创造价值、自我超越，成为更高版本的自己；无预设意义＋强超越。" },
   { name: "萨特", x: 0.76, y: 0.62, group: "现代", dir: "e",
