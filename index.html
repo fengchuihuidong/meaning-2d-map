@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>人生意义二维坐标：哲学家与流派</title>
+<style>
+  :root {
+    --bg: #f7f5f2;
+    --ink: #1f2328;
+    --muted: #5f6368;
+    --line: #3c4043;
+    --card: #fffcf8;
+    --border: #e6e1d8;
+    --q1: #e8f0fe;
+    --q2: #fce8e6;
+    --q3: #e6f4ea;
+    --q4: #fef7e0;
+    --宗教: #7b1fa2;
+    --古典: #1565c0;
+    --现代: #c62828;
+    --东方: #2e7d32;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: "Noto Sans CJK SC", "PingFang SC", "Hiragino Sans GB",
+      "Microsoft YaHei", system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    line-height: 1.45;
+  }
+  header {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 28px 20px 8px;
+  }
+  h1 {
+    font-size: clamp(1.35rem, 2.6vw, 1.85rem);
+    font-weight: 700;
+    margin: 0 0 8px;
+  }
+  .sub {
+    color: var(--muted);
+    font-size: 0.98rem;
+    margin: 0 0 12px;
+  }
+  .note {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 12px 14px;
+    font-size: 0.92rem;
+    color: var(--muted);
+  }
+  .toolbar {
+    max-width: 1100px;
+    margin: 14px auto 0;
+    padding: 0 20px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+  }
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    font-size: 0.95rem;
+  }
+  .legend span {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    display: inline-block;
+  }
+  .filters button {
+    border: 1px solid var(--border);
+    background: var(--card);
+    border-radius: 999px;
+    padding: 6px 12px;
+    font: inherit;
+    cursor: pointer;
+    color: var(--ink);
+  }
+  .filters button.active, .filters button:hover {
+    border-color: #202124;
+    background: #fff;
+  }
+  .stage-wrap {
+    max-width: 1100px;
+    margin: 16px auto 28px;
+    padding: 0 12px;
+  }
+  .stage {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    max-height: min(92vw, 900px);
+    margin: 0 auto;
+    border-radius: 18px;
+    border: 1px solid var(--border);
+    overflow: hidden;
+    background: var(--card);
+    box-shadow: 0 8px 28px rgba(0,0,0,.04);
+    touch-action: none;
+  }
+  .plot {
+    position: absolute;
+    inset: 56px 64px 72px 64px;
+  }
+  .quad {
+    position: absolute;
+    width: 50%;
+    height: 50%;
+  }
+  .q-tl { left: 0; top: 0; background: var(--q1); }
+  .q-tr { right: 0; top: 0; background: var(--q2); }
+  .q-bl { left: 0; bottom: 0; background: var(--q3); }
+  .q-br { right: 0; bottom: 0; background: var(--q4); }
+  .axis-h, .axis-v {
+    position: absolute;
+    background: var(--line);
+    z-index: 2;
+  }
+  .axis-h {
+    left: 0; right: 0; top: 50%;
+    height: 2px;
+    transform: translateY(-50%);
+  }
+  .axis-v {
+    top: 0; bottom: 0; left: 50%;
+    width: 2px;
+    transform: translateX(-50%);
+  }
+  .axis-label {
+    position: absolute;
+    z-index: 4;
+    font-weight: 700;
+    font-size: clamp(0.95rem, 1.7vw, 1.15rem);
+    background: rgba(255,252,248,.88);
+    padding: 2px 6px;
+    border-radius: 6px;
+  }
+  .al-left { left: 8px; top: 50%; transform: translateY(-120%); }
+  .al-right { right: 8px; top: 50%; transform: translateY(-120%); }
+  .al-top { top: 8px; left: 50%; transform: translateX(8px); }
+  .al-bottom { bottom: 10px; left: 50%; transform: translateX(8px); }
+  .q-caption {
+    position: absolute;
+    z-index: 3;
+    font-size: clamp(0.78rem, 1.35vw, 0.92rem);
+    color: var(--muted);
+    max-width: 42%;
+    pointer-events: none;
+  }
+  .qc-tl { left: 10px; top: 10px; }
+  .qc-tr { right: 10px; top: 10px; text-align: right; }
+  .qc-bl { left: 10px; bottom: 10px; }
+  .qc-br { right: 10px; bottom: 10px; text-align: right; }
+
+  .point {
+    position: absolute;
+    z-index: 5;
+    transform: translate(-50%, -50%);
+    cursor: pointer;
+  }
+  .point .mark {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 2px solid #fff;
+    box-shadow: 0 1px 4px rgba(0,0,0,.18);
+  }
+  .point .label {
+    position: absolute;
+    white-space: nowrap;
+    font-size: clamp(0.88rem, 1.55vw, 1.05rem);
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 8px;
+    background: rgba(255,252,248,.94);
+    border: 1px solid var(--border);
+    box-shadow: 0 1px 2px rgba(0,0,0,.04);
+    pointer-events: none;
+  }
+  .point:hover, .point:focus-within, .point.active {
+    z-index: 20;
+  }
+  .point:hover .mark, .point.active .mark {
+    transform: scale(1.25);
+  }
+  .point:hover .label, .point.active .label {
+    border-color: #202124;
+  }
+
+  /* label offset directions */
+  .dir-n .label { left: 50%; bottom: 18px; transform: translateX(-50%); }
+  .dir-s .label { left: 50%; top: 18px; transform: translateX(-50%); }
+  .dir-e .label { left: 18px; top: 50%; transform: translateY(-50%); }
+  .dir-w .label { right: 18px; top: 50%; transform: translateY(-50%); }
+  .dir-ne .label { left: 14px; bottom: 14px; }
+  .dir-nw .label { right: 14px; bottom: 14px; }
+  .dir-se .label { left: 14px; top: 14px; }
+  .dir-sw .label { right: 14px; top: 14px; }
+
+  .tooltip {
+    position: absolute;
+    z-index: 30;
+    min-width: 220px;
+    max-width: min(320px, 70vw);
+    background: #1f2328;
+    color: #fff;
+    border-radius: 12px;
+    padding: 12px 14px;
+    font-size: 0.92rem;
+    line-height: 1.5;
+    box-shadow: 0 12px 30px rgba(0,0,0,.22);
+    pointer-events: none;
+    opacity: 0;
+    transform: translateY(4px);
+    transition: opacity .15s ease, transform .15s ease;
+  }
+  .tooltip.show {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .tooltip strong {
+    display: block;
+    font-size: 1.02rem;
+    margin-bottom: 4px;
+  }
+  .tooltip .meta {
+    color: #c5c8ce;
+    font-size: 0.82rem;
+    margin-bottom: 6px;
+  }
+  footer {
+    max-width: 1100px;
+    margin: 0 auto 40px;
+    padding: 0 20px;
+    color: var(--muted);
+    font-size: 0.9rem;
+  }
+  @media (max-width: 640px) {
+    .plot { inset: 48px 42px 60px 42px; }
+    .point .mark { width: 12px; height: 12px; }
+  }
+</style>
+</head>
+<body>
+  <header>
+    <h1>人生意义二维坐标：哲学家与流派</h1>
+    <p class="sub">横轴：意义来源（外在给定 ↔ 自己生成）　｜　纵轴：人生重心（体验生命 ↔ 超越自我）</p>
+    <div class="note">
+      此图回答的是「若继续活，价值主要安放何处」，而非「世界本身有没有预设意义」。
+      点击或悬停圆点可看简要说明；位置为相对示意，带 * 者争议较大。
+    </div>
+  </header>
+
+  <div class="toolbar">
+    <div class="legend" id="legend"></div>
+    <div class="filters" id="filters"></div>
+  </div>
+
+  <div class="stage-wrap">
+    <div class="stage" id="stage" aria-label="二维坐标图">
+      <div class="axis-label al-left">外在给定</div>
+      <div class="axis-label al-right">自己生成</div>
+      <div class="axis-label al-top">超越自我</div>
+      <div class="axis-label al-bottom">体验生命</div>
+      <div class="plot" id="plot">
+        <div class="quad q-tl"></div>
+        <div class="quad q-tr"></div>
+        <div class="quad q-bl"></div>
+        <div class="quad q-br"></div>
+        <div class="axis-h"></div>
+        <div class="axis-v"></div>
+        <div class="q-caption qc-tl">有客观意义倾向<br>＋ 超越</div>
+        <div class="q-caption qc-tr">无预设意义<br>＋ 自我超越／创造</div>
+        <div class="q-caption qc-bl">有客观意义倾向<br>＋ 体验</div>
+        <div class="q-caption qc-br">无预设意义<br>＋ 体验／感受</div>
+      </div>
+      <div class="tooltip" id="tooltip" role="tooltip"></div>
+    </div>
+  </div>
+
+  <footer>
+    坐标定义来自你的框架：意义来源（外在给定 ↔ 自己生成）与人生重心（体验生命 ↔ 超越自我）。
+    「没有客观意义」不等于「只能追求体验」——萨特、尼采即是典型反例。
+  </footer>
+
+<script>
+const GROUPS = [
+  { id: "宗教/传统", color: "#7b1fa2" },
+  { id: "古典", color: "#1565c0" },
+  { id: "现代", color: "#c62828" },
+  { id: "东方", color: "#2e7d32" },
+];
+
+// x: -1 外在给定 → 1 自己生成
+// y: -1 体验生命 → 1 超越自我
+const POINTS = [
+  { name: "基督教哲学", x: -0.90, y: 0.88, group: "宗教/传统", dir: "nw",
+    blurb: "极强超越：人生指向上帝，个人生命嵌入高于个人的终极秩序。" },
+  { name: "伊斯兰教哲学", x: -0.78, y: 0.70, group: "宗教/传统", dir: "w",
+    blurb: "意义外在给定于神圣启示与律法秩序，人生重心偏责任与朝向超越。" },
+  { name: "托马斯·阿奎那", x: -0.84, y: 0.42, group: "宗教/传统", dir: "w",
+    blurb: "综合信仰与理性：幸福与完善指向上帝，属外在目的＋超越。" },
+  { name: "儒家", x: -0.62, y: 0.90, group: "宗教/传统", dir: "n",
+    blurb: "意义主要来自关系、责任、修身与社会秩序，不只属于个人。" },
+  { name: "柏拉图", x: -0.55, y: 0.58, group: "古典", dir: "ne",
+    blurb: "理念论：真实与善在可感世界之上，人生应朝向理念／善本身。" },
+  { name: "亚里士多德", x: -0.42, y: 0.35, group: "古典", dir: "se",
+    blurb: "中间但偏超越：通过德性、理性、实践实现「人的完善」。" },
+  { name: "斯多亚派", x: -0.30, y: 0.72, group: "古典", dir: "n",
+    blurb: "依自然／理性而活，德性即幸福；偏外在秩序＋自我超越。" },
+  { name: "弗兰克尔", x: -0.16, y: 0.88, group: "现代", dir: "ne",
+    blurb: "意义常来自工作、爱、责任与对目标的投入，超越色彩很强。" },
+  { name: "康德*", x: -0.48, y: 0.06, group: "古典", dir: "sw",
+    blurb: "道德法则与目的王国；位置有争议，示意放在外在规范＋偏超越一侧。" },
+  { name: "宗教神秘主义", x: -0.72, y: -0.40, group: "宗教/传统", dir: "w",
+    blurb: "相信有客观神圣实在，但重心更在合一体验、临在与感受。" },
+  { name: "部分自然主义", x: -0.40, y: -0.58, group: "现代", dir: "sw",
+    blurb: "世界有自然秩序／可理解结构，人生价值可安放在自然生命体验中。" },
+  { name: "伊壁鸠鲁", x: -0.22, y: -0.85, group: "古典", dir: "s",
+    blurb: "追求安宁、友谊、免于恐惧；不是纵欲，而是让生命过得舒适平静。" },
+  { name: "加缪", x: 0.58, y: -0.68, group: "现代", dir: "se",
+    blurb: "宇宙无终极意义，仍继续活、感受、行动；重点是「活着本身」。" },
+  { name: "庄子／道家", x: 0.18, y: -0.88, group: "东方", dir: "s",
+    blurb: "顺其自然、逍遥而游；重点是生命状态本身，而非外在使命。" },
+  { name: "佛教（空／消解）", x: 0.06, y: -0.42, group: "东方", dir: "e",
+    blurb: "弱化／消解僵固的「意义」执着，重心更接近放下与如实现照。" },
+  { name: "部分道家式理解", x: 0.42, y: -0.30, group: "东方", dir: "e",
+    blurb: "无强预设使命，强调自然、无为与当下生命姿态。" },
+  { name: "享乐主义（通俗）", x: 0.35, y: -0.58, group: "现代", dir: "sw",
+    blurb: "通俗版：价值主要安放在快感与舒适体验（与伊壁鸠鲁有重要差别）。" },
+  { name: "尼采", x: 0.90, y: 0.88, group: "现代", dir: "ne",
+    blurb: "创造价值、自我超越，成为更高版本的自己；无预设意义＋强超越。" },
+  { name: "萨特", x: 0.76, y: 0.62, group: "现代", dir: "e",
+    blurb: "存在先于本质：无预设使命，但通过选择、承诺与投入自我定义。" },
+  { name: "存在主义（一般）", x: 0.58, y: 0.38, group: "现代", dir: "e",
+    blurb: "强调自由、选择与责任；多为自己生成意义，并朝向投入的计划。" },
+  { name: "海德格尔*", x: 0.45, y: 0.14, group: "现代", dir: "se",
+    blurb: "此在、本真与向死而在；位置争议大，示意偏自生＋有限超越。" },
+  { name: "人本主义心理学", x: 0.28, y: 0.55, group: "现代", dir: "n",
+    blurb: "自我实现与成长；意义多由个体生成，并朝向潜能展开。" },
+  { name: "叔本华", x: 0.08, y: 0.12, group: "现代", dir: "e",
+    blurb: "体验的否定版：普通生命充满欲望与痛苦，主张减欲、审美、同情以暂时超脱。" },
+  { name: "佛教（慈悲实践）", x: -0.08, y: 0.42, group: "东方", dir: "n",
+    blurb: "在空性洞见之上，以慈悲、利他与誓愿安放人生重心，偏超越实践。" },
+];
+
+const plot = document.getElementById("plot");
+const tooltip = document.getElementById("tooltip");
+const stage = document.getElementById("stage");
+const legend = document.getElementById("legend");
+const filters = document.getElementById("filters");
+
+let activeGroup = "全部";
+
+GROUPS.forEach(g => {
+  const s = document.createElement("span");
+  s.innerHTML = `<i class="dot" style="background:${g.color}"></i>${g.id}`;
+  legend.appendChild(s);
+});
+
+["全部", ...GROUPS.map(g => g.id)].forEach(id => {
+  const b = document.createElement("button");
+  b.textContent = id;
+  b.className = id === "全部" ? "active" : "";
+  b.addEventListener("click", () => {
+    activeGroup = id;
+    [...filters.children].forEach(el => el.classList.toggle("active", el.textContent === id));
+    render();
+  });
+  filters.appendChild(b);
+});
+
+function toPct(v) {
+  // -1..1 → 0%..100%, y inverted (high y = top)
+  return {
+    left: ((v.x + 1) / 2) * 100,
+    top: ((1 - v.y) / 2) * 100,
+  };
+}
+
+function colorOf(group) {
+  return GROUPS.find(g => g.id === group).color;
+}
+
+function hideTip() {
+  tooltip.classList.remove("show");
+  document.querySelectorAll(".point.active").forEach(el => el.classList.remove("active"));
+}
+
+function showTip(p, el) {
+  document.querySelectorAll(".point.active").forEach(n => n.classList.remove("active"));
+  el.classList.add("active");
+  tooltip.innerHTML = `<strong>${p.name}</strong><div class="meta">${p.group}　·　x=${p.x.toFixed(2)}　y=${p.y.toFixed(2)}</div>${p.blurb}`;
+  tooltip.classList.add("show");
+
+  const rect = stage.getBoundingClientRect();
+  const er = el.getBoundingClientRect();
+  let left = er.left - rect.left + er.width / 2 - 120;
+  let top = er.top - rect.top - 12;
+  left = Math.max(8, Math.min(left, rect.width - 260));
+  // prefer above; if too high, put below
+  const tipH = 120;
+  if (top < tipH + 8) top = er.bottom - rect.top + 10;
+  else top = top - tipH;
+  tooltip.style.left = left + "px";
+  tooltip.style.top = Math.max(8, top) + "px";
+}
+
+function render() {
+  plot.querySelectorAll(".point").forEach(n => n.remove());
+  hideTip();
+  POINTS.filter(p => activeGroup === "全部" || p.group === activeGroup).forEach(p => {
+    const pos = toPct(p);
+    const el = document.createElement("div");
+    el.className = `point dir-${p.dir}`;
+    el.style.left = pos.left + "%";
+    el.style.top = pos.top + "%";
+    el.tabIndex = 0;
+    el.innerHTML = `<div class="mark" style="background:${colorOf(p.group)}"></div><div class="label">${p.name}</div>`;
+    el.addEventListener("mouseenter", () => showTip(p, el));
+    el.addEventListener("focus", () => showTip(p, el));
+    el.addEventListener("click", (e) => {
+      e.stopPropagation();
+      if (el.classList.contains("active") && tooltip.classList.contains("show")) hideTip();
+      else showTip(p, el);
+    });
+    plot.appendChild(el);
+  });
+}
+
+stage.addEventListener("click", hideTip);
+render();
+</script>
+</body>
+</html>
