@@ -142,13 +142,14 @@
     display: block; font-weight: 500; font-size: .72rem; color: var(--muted); margin-top: 2px;
   }
   .q-caption {
-    position: absolute; z-index: 3; max-width: 46%;
-    font-size: .9rem; color: #3d4450; line-height: 1.4;
-    background: rgba(255,252,247,.88); padding: 10px 12px; border-radius: 12px;
-    border: 1px solid rgba(221,214,203,.9);
+    position: absolute; z-index: 3; max-width: 48%;
+    font-size: 1.05rem; color: #2f3540; line-height: 1.45;
+    background: rgba(255,252,247,.94); padding: 12px 14px; border-radius: 12px;
+    border: 1px solid rgba(221,214,203,.95);
     pointer-events: none;
+    box-shadow: 0 2px 10px rgba(0,0,0,.04);
   }
-  .q-caption strong { display:block; font-size: 1rem; margin-bottom: 3px; color: var(--ink); }
+  .q-caption strong { display:block; font-size: 1.18rem; margin-bottom: 4px; color: var(--ink); }
   .qc-tl { left: 12px; top: 12px; }
   .qc-tr { right: 12px; top: 12px; text-align: right; }
   .qc-bl { left: 12px; bottom: 12px; }
@@ -169,18 +170,31 @@
   }
   .point .label {
     position: absolute; white-space: nowrap;
-    font-size: 1.08rem; font-weight: 700;
-    padding: 4px 10px; border-radius: 9px;
-    background: rgba(255,252,247,.98);
+    font-size: .95rem; font-weight: 700;
+    padding: 3px 8px; border-radius: 8px;
+    background: rgba(255,252,247,.96);
     border: 1px solid var(--border);
     pointer-events: none;
-    box-shadow: 0 1px 3px rgba(0,0,0,.06);
+    box-shadow: 0 1px 3px rgba(0,0,0,.05);
+    max-width: 7.2em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    opacity: .92;
   }
   .point:hover .mark, .point.selected .mark { transform: scale(1.28); }
-  .point.selected .label {
+  .point:hover .label, .point.selected .label {
+    max-width: none;
+    overflow: visible;
+    opacity: 1;
+    z-index: 8;
+    font-size: 1.08rem;
+    padding: 4px 10px;
     border-color: var(--ink);
-    box-shadow: 0 0 0 2px rgba(26,28,30,.08);
+    box-shadow: 0 4px 14px rgba(0,0,0,.12);
+    background: #fff;
   }
+  .point.selected { z-index: 12; }
+  .point:hover { z-index: 11; }
   .dir-n .label { left:50%; bottom:20px; transform:translateX(-50%); }
   .dir-s .label { left:50%; top:20px; transform:translateX(-50%); }
   .dir-e .label { left:20px; top:50%; transform:translateY(-50%); }
@@ -210,38 +224,39 @@
   @media (max-width: 860px) {
     .side { border-left: none; border-top: 1px solid var(--border); }
   }
-  .side-empty, .side-body { padding: 18px 18px 22px; overflow: auto; }
+  .side-empty, .side-body { padding: 12px 14px 16px; overflow: auto; }
   .side-empty {
-    color: var(--muted); font-size: .95rem; line-height: 1.55;
+    color: var(--muted); font-size: .9rem; line-height: 1.45;
   }
   .side-empty h2 {
-    margin: 0 0 8px; font-size: 1.15rem; color: var(--ink);
+    margin: 0 0 6px; font-size: 1.05rem; color: var(--ink);
   }
   .badge {
     display: inline-flex; align-items: center; gap: 6px;
-    font-size: .8rem; color: var(--muted); margin-bottom: 10px;
+    font-size: .78rem; color: var(--muted); margin-bottom: 6px;
   }
   .side-body h2 {
-    margin: 0 0 6px; font-size: 1.35rem; line-height: 1.25;
+    margin: 0 0 4px; font-size: 1.2rem; line-height: 1.25;
   }
   .coords {
-    font-size: .82rem; color: var(--muted); margin-bottom: 14px;
+    font-size: .8rem; color: var(--muted); margin-bottom: 8px;
   }
   .blurb {
-    font-size: .98rem; line-height: 1.65; margin: 0 0 16px;
+    font-size: .92rem; line-height: 1.5; margin: 0 0 10px;
   }
   .meta-grid {
-    display: grid; gap: 10px;
+    display: grid; gap: 8px;
     grid-template-columns: 1fr 1fr;
-    margin-top: 4px;
+    margin-top: 0;
   }
   .meta-card {
-    background: #f7f3ec; border-radius: 12px; padding: 10px 12px;
+    background: #f7f3ec; border-radius: 10px; padding: 8px 10px;
   }
-  .meta-card .k { font-size: .75rem; color: var(--muted); margin-bottom: 4px; }
-  .meta-card .v { font-size: .92rem; font-weight: 650; }
+  .meta-card .k { font-size: .72rem; color: var(--muted); margin-bottom: 2px; }
+  .meta-card .v { font-size: .88rem; font-weight: 650; }
   .filters {
-    padding: 0 18px 14px; display: flex; flex-wrap: wrap; gap: 6px;
+    padding: 10px 14px 8px; display: flex; flex-wrap: wrap; gap: 6px;
+    border-bottom: 1px solid var(--border);
   }
 </style>
 </head>
@@ -298,9 +313,9 @@
       <div class="filters" id="filters"></div>
       <div class="side-empty" id="sideEmpty">
         <h2>点选一位思想家</h2>
-        左侧画布可拖拽、缩放。点击圆点后，这里会显示所属象限、坐标与简要说明。
+        点击圆点看象限与说明。标签默认缩略，悬停/选中显示全称。
         <br><br>
-        此图回答的是「若继续活，价值主要安放何处」，而非「世界本身有没有预设意义」。带 * 者位置争议较大。
+        回答的是「价值安放何处」，不是「有没有预设意义」。* 表示位置争议较大。
       </div>
       <div class="side-body" id="sideBody" hidden></div>
     </aside>
@@ -315,16 +330,16 @@ const GROUPS = [
 ];
 
 const POINTS = [
-  { name: "基督教哲学", x: -0.90, y: 0.88, group: "宗教/传统", dir: "nw",
+  { name: "基督教哲学", x: -0.90, y: 0.88, group: "宗教/传统", dir: "n",
     source: "外在给定", focus: "超越自我",
     blurb: "极强超越：人生指向上帝，个人生命嵌入高于个人的终极秩序。" },
-  { name: "伊斯兰教哲学", x: -0.78, y: 0.70, group: "宗教/传统", dir: "w",
+  { name: "伊斯兰教哲学", x: -0.78, y: 0.70, group: "宗教/传统", dir: "nw",
     source: "外在给定", focus: "超越自我",
     blurb: "意义外在给定于神圣启示与律法秩序，人生重心偏责任与朝向超越。" },
   { name: "托马斯·阿奎那", x: -0.84, y: 0.42, group: "宗教/传统", dir: "w",
     source: "外在给定", focus: "超越自我",
     blurb: "综合信仰与理性：幸福与完善指向上帝，属外在目的＋超越。" },
-  { name: "儒家", x: -0.62, y: 0.90, group: "宗教/传统", dir: "n",
+  { name: "儒家", x: -0.62, y: 0.90, group: "宗教/传统", dir: "ne",
     source: "外在给定", focus: "超越自我",
     blurb: "意义主要来自关系、责任、修身与社会秩序，不只属于个人。" },
   { name: "柏拉图", x: -0.55, y: 0.58, group: "古典", dir: "ne",
@@ -333,10 +348,10 @@ const POINTS = [
   { name: "亚里士多德", x: -0.42, y: 0.35, group: "古典", dir: "se",
     source: "外在给定（偏）", focus: "超越自我（偏）",
     blurb: "中间但偏超越：通过德性、理性、实践实现「人的完善」。" },
-  { name: "斯多亚派", x: -0.30, y: 0.72, group: "古典", dir: "n",
+  { name: "斯多亚派", x: -0.30, y: 0.72, group: "古典", dir: "ne",
     source: "外在给定", focus: "超越自我",
     blurb: "依自然／理性而活，德性即幸福；偏外在秩序＋自我超越。" },
-  { name: "弗兰克尔", x: -0.16, y: 0.88, group: "现代", dir: "ne",
+  { name: "弗兰克尔", x: -0.16, y: 0.88, group: "现代", dir: "n",
     source: "可发现／外在召唤", focus: "超越自我",
     blurb: "意义常来自工作、爱、责任与对目标的投入，超越色彩很强。" },
   { name: "康德*", x: -0.48, y: 0.06, group: "古典", dir: "sw",
